@@ -1,5 +1,10 @@
 htop/
 raycast/
+github-copilot/
+sourcery/
+zed/
 
 .zcompdump
 .zsh_history
+
+.DS_Store
