@@ -1,0 +1,118 @@
+#!/bin/bash
+
+# Minimal SketchyBar Configuration
+# Transparent bar with AeroSpace workspace integration
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+ITEM_DIR="$CONFIG_DIR/items"
+
+##### Bar Appearance #####
+# Fully transparent bar - only text visible
+sketchybar --bar height=32            \
+                 blur_radius=0        \
+                 position=top         \
+                 sticky=on            \
+                 padding_left=10      \
+                 padding_right=10     \
+                 margin=0             \
+                 y_offset=2           \
+                 corner_radius=0      \
+                 color=0x00000000
+
+##### Changing Defaults #####
+sketchybar --default icon.font="Hack Nerd Font:Bold:17.0"  \
+                     icon.color=0xffffffff             \
+                     label.font="Hack Nerd Font:Bold:14.0" \
+                     label.color=0xffffffff            \
+                     padding_left=8                    \
+                     padding_right=8                   \
+                     icon.padding_left=8               \
+                     icon.padding_right=8              \
+                     label.padding_left=6              \
+                     label.padding_right=6             \
+                     background.drawing=off
+
+# -- Left Side: Workspaces + Current App --
+source $ITEM_DIR/spaces.sh
+source $ITEM_DIR/front_app.sh
+
+# Separator between app and other workspaces
+sketchybar --add item separator left \
+           --set separator icon="|" \
+                           icon.font="Hack Nerd Font:Regular:14.0" \
+                           icon.color=0x80ffffff \
+                           label.drawing=off \
+                           padding_left=6 \
+                           padding_right=6
+
+# Other non-empty workspaces (after separator)
+sketchybar --add item workspaces_other left \
+           --set workspaces_other label.font="Hack Nerd Font:Bold:14.0" \
+                                  label.color=0xaaffffff \
+                                  icon.drawing=off \
+                                  padding_left=0 \
+                                  padding_right=4 \
+                                  script="$PLUGIN_DIR/space.sh" \
+           --subscribe workspaces_other aerospace_workspace_change
+
+# -- Right Side: CPU MEM BAT CALENDAR TIME --
+# Items added right-to-left, so add in reverse order
+
+# TIME (rightmost)
+sketchybar --add item time right \
+           --set time icon="" \
+                      icon.font="Hack Nerd Font:Bold:14.0" \
+                      label.font="Hack Nerd Font:Bold:14.0" \
+                      label.color=0xffffffff \
+                      update_freq=30 \
+                      padding_right=10 \
+                      script="$PLUGIN_DIR/calendar.sh"
+
+# CALENDAR
+sketchybar --add item calendar right \
+           --set calendar icon="" \
+                          icon.font="Hack Nerd Font:Bold:14.0" \
+                          label.font="Hack Nerd Font:Bold:14.0" \
+                          label.color=0xffffffff \
+                          update_freq=10 \
+                          script='sketchybar --set $NAME label="$(date +"%a %d %b")"'
+
+# BATTERY
+sketchybar --add item battery right \
+           --set battery icon.font="Hack Nerd Font:Bold:14.0" \
+                         icon.color=0xffffffff \
+                         label.font="Hack Nerd Font:Bold:14.0" \
+                         label.color=0xffffffff \
+                         update_freq=10 \
+                         script="$PLUGIN_DIR/battery.sh" \
+           --subscribe battery system_woke power_source_change
+
+# MEMORY
+# sketchybar --add item memory right \
+#            --set memory update_freq=5 \
+#                         icon="󰍛" \
+#                         icon.font="Hack Nerd Font:Bold:16.0" \
+#                         label.font="Hack Nerd Font:Bold:14.0" \
+#                         label.color=0xffffffff \
+#                         script="$PLUGIN_DIR/memory.sh"
+
+# GPU
+# sketchybar --add item gpu right \
+#            --set gpu update_freq=5 \
+#                      icon="󰢮" \
+#                      icon.font="Hack Nerd Font:Bold:16.0" \
+#                      label.font="Hack Nerd Font:Bold:14.0" \
+#                      label.color=0xffffffff \
+#                      script="$PLUGIN_DIR/gpu.sh"
+
+# CPU (leftmost of right side)
+# sketchybar --add item cpu right \
+#            --set cpu update_freq=5 \
+#                      icon="" \
+#                      icon.font="Hack Nerd Font:Bold:14.0" \
+#                      label.font="Hack Nerd Font:Bold:14.0" \
+#                      label.color=0xffffffff \
+#                      script="$PLUGIN_DIR/cpu.sh"
+
+##### Finalizing Setup #####
+sketchybar --update
