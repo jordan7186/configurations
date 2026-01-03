@@ -1,7 +1,10 @@
-theme = Synthwave
-font-size = 16
+font-family = Meslo Nerd Font
+theme = Catppuccin Mocha
 background-blur-radius = 20
-mouse-hide-while-typing = true
 window-decoration = true
-background-opacity = 0.7
+background-opacity = 0.9
+background-blur-radius = 15
+window-decoration = true
+mouse-hide-while-typing = true
+
 shell-integration-features = ssh-terminfo,ssh-env
