@@ -5,3 +5,6 @@ This repository includes my personal configuration dotfiles/bashfiles etc. for t
 - JankyBorders
 - Sketchybar
 - Ghostty
+and zsh
+
+Largely WIP
