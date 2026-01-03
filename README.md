@@ -4,7 +4,8 @@ This repository includes my personal configuration dotfiles/bashfiles etc. for t
 - Aerospace
 - JankyBorders
 - Sketchybar
-- Ghostty
-and zsh
+- Ghostty (+starship)
 
-Largely WIP
+and some zsh.
+
+**Largely WIP**
