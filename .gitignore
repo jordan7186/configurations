@@ -4,7 +4,14 @@ github-copilot/
 sourcery/
 zed/
 
-.zcompdump
-.zsh_history
-
 .DS_Store
+
+# Zsh generated/state files (avoid accidental commits)
+.zsh_history
+.zcompdump*
+.zsh_sessions/
+
+# If any tool writes cache/state under ~/.config
+**/.cache/
+**/cache/
+**/state/
