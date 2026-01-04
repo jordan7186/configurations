@@ -1,49 +1,51 @@
 # ~/.config/.zshrc
 
-# ---- interactive-only guard ----
 [[ -o interactive ]] || return
 
-# ---- keep generated state OUT of the ~/.config git repo ----
+# ---- Zinit bootstrap  ----
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+[ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
+[ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+source "${ZINIT_HOME}/zinit.zsh"
+
+# ---- Keep generated state out of ~/.config (avoid git tracking) ----
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
-
-# Zsh history file (avoid ~/.config/.zsh_history if ZDOTDIR=~/.config)
 export HISTFILE="$XDG_STATE_HOME/zsh/history"
 mkdir -p "$(dirname "$HISTFILE")"
 
-# ---- Zap bootstrap (plugin manager) ----
-ZAP_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/zap"
-if [[ -r "$ZAP_DIR/zap.zsh" ]]; then
-    source "$ZAP_DIR/zap.zsh"
-else
-    echo "Zap not found at $ZAP_DIR/zap.zsh (install zap first)"
-fi
+# ---- 1) zsh-completions  ----
+# Zinit Wiki recommends blockf and running creinstall on update for completions.
+zinit ice blockf atpull'zinit creinstall -q .'
+zinit light zsh-users/zsh-completions
 
-# ---- completions ----
+# ---- 2) compinit  ----
 autoload -Uz compinit
-# Store compdump in cache (avoid polluting ~/.config)
 COMPDUMP="$XDG_CACHE_HOME/zsh/zcompdump"
 mkdir -p "$(dirname "$COMPDUMP")"
 compinit -d "$COMPDUMP"
 
-# ---- fzf (binary) shell integration (completion + keybindings) ----
+# ---- 3) fzf shell integration (optional but recommended) ----
 if command -v brew >/dev/null 2>&1; then
-    FZF_BASE="$(brew --prefix)/opt/fzf"
-    [[ -r "$FZF_BASE/shell/completion.zsh" ]] && source "$FZF_BASE/shell/completion.zsh"
-    [[ -r "$FZF_BASE/shell/key-bindings.zsh" ]] && source "$FZF_BASE/shell/key-bindings.zsh"
+  FZF_BASE="$(brew --prefix)/opt/fzf"
+  [[ -r "$FZF_BASE/shell/completion.zsh" ]] && source "$FZF_BASE/shell/completion.zsh"
+  [[ -r "$FZF_BASE/shell/key-bindings.zsh" ]] && source "$FZF_BASE/shell/key-bindings.zsh"
 fi
 
-# ---- Zap-managed plugins ----
-# Must load after compinit; before autosuggestions/highlighting
-plug "Aloxaf/fzf-tab"
+# ---- 4) fzf-tab  ----
+zinit light Aloxaf/fzf-tab
+# fzf-tab load-order requirement :contentReference[oaicite:8]{index=8}
 
-plug "zsh-users/zsh-autosuggestions"
-plug "zsh-users/zsh-syntax-highlighting"
+# ---- 5) autosuggestions ----
+zinit light zsh-users/zsh-autosuggestions
 
-# ---- zoxide (binary) ----
-if command -v zoxide >/dev/null 2>&1; then
-    eval "$(zoxide init zsh)"
-fi
+# ---- 6) zoxide ----
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
-# ---- prompt (starship) ----
+# ---- 7) prompt (starship) ----
 eval "$(starship init zsh)"
+
+# ---- 8) syntax highlighting  ----
+# Documnet specifies this should be placed last
+zinit light zsh-users/zsh-syntax-highlighting
+
